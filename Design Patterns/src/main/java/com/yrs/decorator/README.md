@@ -118,4 +118,4 @@ public class Test {
 **装饰者模式的重点是装饰者有一个被装饰者的实例变量**
 
 ### Java IO中的装饰者模式
-![java IO中的装饰者模式](http://img.blog.csdn.net/20170702181520061?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMDY1NzA5NA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+![Java IO中的装饰者模式](http://img.blog.csdn.net/20170702184006827?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvdTAxMDY1NzA5NA==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
