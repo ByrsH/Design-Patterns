@@ -3,7 +3,7 @@ package com.yrs.decorator;
 /**
  * Created by yrs on 2017/7/2.
  */
-public class Test {
+public class TestDecorator {
     public static void main(String [] args) {
         Component component = new ConcreteComponent();
         component = new ConcreteDecoratorA(component); //用ConcreteDecoratorA类装饰ConcreteComponent对象
