@@ -1,4 +1,4 @@
-package com.yrs.proxy;
+package com.yrs.proxy.staticProxy;
 
 /**
  * Created by yrs on 2017/7/13.
