@@ -12,6 +12,5 @@ public class Client {
         Interface proxy = DynamicProxy.newProxyInstance(proxied.getClass().getClassLoader(),proxied.getClass().getInterfaces(),handler);
         proxy.doSomething("sing");
     }
-
 }
                 

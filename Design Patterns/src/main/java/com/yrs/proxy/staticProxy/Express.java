@@ -5,6 +5,5 @@ package com.yrs.proxy.staticProxy;
  */
 public interface Express {
     void deliverExpress(String goods);
-
     void getStateInfo(String goods);
 }
