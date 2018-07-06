@@ -11,7 +11,10 @@ public class HungrySingleton {
     private static final HungrySingleton singleton = new HungrySingleton();
 
     private HungrySingleton() {
-
+        // 防止通过反射的方式，调用构造方法实例化对象。
+        if (singleton != null) {
+            throw new IllegalStateException("Already initialized.");
+        }
     }
 
     public static HungrySingleton getSingleton() {

@@ -11,7 +11,12 @@ public class SynchronizedMethodSingleton {
     private static SynchronizedMethodSingleton singleton = null;
 
     private SynchronizedMethodSingleton() {
-
+        // 防止通过反射的方式，调用构造方法实例化对象。
+        if (singleton == null) {
+            singleton = this;
+        } else {
+            throw new IllegalStateException("Already initialized.");
+        }
     }
 
     /**

@@ -18,7 +18,12 @@ public class DoubleCheckLockSingleton {
 
     //私有构造方法确保不被通过new实例化出对象
     private DoubleCheckLockSingleton() {
-
+        // 防止通过反射的方式，调用构造方法实例化对象。
+        if (singleton == null) {
+            singleton = this;
+        } else {
+            throw new IllegalStateException("Already initialized.");
+        }
     }
 
     /**
