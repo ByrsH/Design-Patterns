@@ -14,7 +14,9 @@ public class SerializeHungrySingleton implements Serializable {
     // 为了保证Singleton，必须声明所有实例域都是transient的。
     private static final transient SerializeHungrySingleton singleton = new SerializeHungrySingleton();
 
+    //私有构造方法确保不被通过new实例化出对象
     private SerializeHungrySingleton() {
+        // 防止通过反射的方式，调用构造方法实例化对象。
         if (singleton != null) {
             throw new IllegalStateException("Already initialized.");
         }

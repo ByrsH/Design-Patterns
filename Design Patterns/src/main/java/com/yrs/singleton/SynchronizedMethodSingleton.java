@@ -2,7 +2,7 @@ package com.yrs.singleton;
 
 /**
  * @Author: yangrusheng
- * @Description: 线程安全的"饿汉式"单例模式实现
+ * @Description: 线程安全的"懒汉式"单例模式实现
  * @Date: Created in 13:54 2018/7/5
  * @Modified By:
  */

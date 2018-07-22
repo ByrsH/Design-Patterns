@@ -2,7 +2,7 @@ package com.yrs.singleton;
 
 /**
  * @Author: yangrusheng
- * @Description:
+ * @Description: 饿汉式实现变形，静态代码块初始化
  * @Date: Created in 8:14 2018/7/17
  * @Modified By:
  */
