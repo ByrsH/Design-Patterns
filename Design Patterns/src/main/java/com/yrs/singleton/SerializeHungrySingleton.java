@@ -1,6 +1,8 @@
 package com.yrs.singleton;
 
-import java.io.Serializable;
+import com.yrs.prototype.DeepCopyByStreamPrototype;
+
+import java.io.*;
 
 /**
  * @Author: yangrusheng
@@ -29,6 +31,20 @@ public class SerializeHungrySingleton implements Serializable {
     // 会直接调用readResolve()方法来获取实例。
     private Object readResolve() {
         return singleton;
+    }
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        SerializeHungrySingleton singleton = SerializeHungrySingleton.getSingleton();
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(singleton);
+
+        //将对象从流中取出来
+        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+        ObjectInputStream ois = new ObjectInputStream(bis);
+        SerializeHungrySingleton singleton1 =  (SerializeHungrySingleton) ois.readObject();
+
+        System.out.println(singleton == singleton1);
     }
 
 }

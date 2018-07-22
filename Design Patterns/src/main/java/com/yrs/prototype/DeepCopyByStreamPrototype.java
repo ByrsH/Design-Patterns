@@ -25,4 +25,11 @@ public class DeepCopyByStreamPrototype implements Serializable {
         return (DeepCopyByStreamPrototype) ois.readObject();
     }
 
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        DeepCopyByStreamPrototype prototype = new DeepCopyByStreamPrototype();
+        prototype.arrayList.add("yrs");
+        DeepCopyByStreamPrototype copyPrototype = prototype.deepCopy();
+        System.out.println(copyPrototype);
+    }
+
 }
