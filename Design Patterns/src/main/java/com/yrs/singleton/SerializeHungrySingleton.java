@@ -1,7 +1,5 @@
 package com.yrs.singleton;
 
-import com.yrs.prototype.DeepCopyByStreamPrototype;
-
 import java.io.*;
 
 /**
