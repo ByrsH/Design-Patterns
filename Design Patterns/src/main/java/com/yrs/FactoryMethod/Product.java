@@ -7,7 +7,5 @@ package com.yrs.FactoryMethod;
  * @Modified By:
  */
 public interface Product {
-
     void printName();
-
 }
