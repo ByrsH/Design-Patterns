@@ -1,6 +1,5 @@
 package com.yrs.FactoryMethod;
 
-import com.yrs.prototype.Prototype;
 
 /**
  * @Author: yangrusheng

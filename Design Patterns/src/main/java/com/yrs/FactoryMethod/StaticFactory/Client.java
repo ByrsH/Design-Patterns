@@ -2,7 +2,6 @@ package com.yrs.FactoryMethod.StaticFactory;
 
 import com.yrs.FactoryMethod.ConcreteProduct1;
 import com.yrs.FactoryMethod.ConcreteProduct2;
-import com.yrs.FactoryMethod.Factory;
 import com.yrs.FactoryMethod.Product;
 
 /**

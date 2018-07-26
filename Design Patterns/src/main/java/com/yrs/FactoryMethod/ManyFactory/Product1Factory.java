@@ -1,7 +1,6 @@
 package com.yrs.FactoryMethod.ManyFactory;
 
 import com.yrs.FactoryMethod.ConcreteProduct1;
-import com.yrs.FactoryMethod.ManyFactory.Factory;
 import com.yrs.FactoryMethod.Product;
 
 /**
