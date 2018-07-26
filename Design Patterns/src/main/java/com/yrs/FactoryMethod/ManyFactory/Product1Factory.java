@@ -10,7 +10,6 @@ import com.yrs.FactoryMethod.Product;
  * @Modified By:
  */
 public class Product1Factory implements Factory {
-
     public Product createProduct() {
         return new ConcreteProduct1();
     }
