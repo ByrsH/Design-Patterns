@@ -1,4 +1,4 @@
-package com.yrs.FactoryMethod;
+package com.yrs.factoryMethod;
 
 
 /**

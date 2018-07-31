@@ -1,6 +1,6 @@
-package com.yrs.FactoryMethod.StaticFactory;
+package com.yrs.factoryMethod.StaticFactory;
 
-import com.yrs.FactoryMethod.Product;
+import com.yrs.factoryMethod.Product;
 
 /**
  * @Author: yangrusheng

@@ -1,6 +1,6 @@
-package com.yrs.FactoryMethod.ManyFactory;
+package com.yrs.factoryMethod.ManyFactory;
 
-import com.yrs.FactoryMethod.Product;
+import com.yrs.factoryMethod.Product;
 
 /**
  * @Author: yangrusheng
