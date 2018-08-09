@@ -13,7 +13,7 @@ public abstract class AbstractProductA {
         System.out.println("this is product A");
     }
 
-    //不同类型产品A共有方法，不同的实现
+    //不同类型产品B共有方法，不同的实现
     public abstract void doSomething();
 
 }
