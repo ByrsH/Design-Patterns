@@ -11,6 +11,9 @@ public class Client {
         InvocationHandler handler = new DynamicProxyHandler(proxied);
         Interface proxy = DynamicProxy.newProxyInstance(proxied.getClass().getClassLoader(),proxied.getClass().getInterfaces(),handler);
         proxy.doSomething("sing");
+
+        Interface subjectProxy = SubjectDynamicProxy.newProxyInstance(proxied);
+        subjectProxy.doSomething("subject");
     }
 }
                 
