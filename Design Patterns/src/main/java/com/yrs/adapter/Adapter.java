@@ -2,7 +2,7 @@ package com.yrs.adapter;
 
 /**
  * @Author: yangrusheng
- * @Description: 适配器角色
+ * @Description: 类适配器，其与被适配类的关系是继承，通过继承来实现适配。
  * @Date: Created in 10:09 2018/9/17
  * @Modified By:
  */
