@@ -1,0 +1,265 @@
+https://blog.csdn.net/u010657094/article/details/82963180
+
+
+### 组合模式定义
+
+> **将对象组合成树形结构以表示“部分-整体”的层次结构，使得用户对单个对象和组合对象的使用具有一致性。**
+
+### 具体实现
+
+组合模式是以树形结构来表示对象组合的结构，因此存在树枝构件（Composite）和叶子构件（Leaf）不同的类型。树枝构件可以含有其他树枝构件，也可以含有叶子构件。叶子构件不包含其他构件，是树形结构的最小单位。由树枝构件和叶子构件不同的属性，因此它们存在共有的方法，也有不同的方法。比如树枝构件可以添加、删除、获得子构件等操作，而叶子构件就没有这些方法。
+
+对于不同的构件有不同的操作，组合模式的实现方式有两种：安全模式、透明模式。安全模式是在抽象构件里定义共有的属性和方法，具体实现的构件分别定义各自特有的方法。透明模式是在抽象构件里定义所有的属性和方法，具体的构件都要继承实现抽象构件的方法。
+
+#### 安全模式实现
+通用类图：
+![安全模式](https://img-blog.csdn.net/2018101417575897?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTA2NTcwOTQ=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
+抽象构件Component：
+
+```
+package com.yrs.composite;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 抽象构建
+ * @Date: Created in 17:23 2018/9/24
+ * @Modified By:
+ */
+public abstract class Component {
+
+    //个体和整体都具有的方法
+    public void doSomething() {
+        //编写业务逻辑
+    }
+}
+```
+树枝构件Composite：
+
+```
+package com.yrs.composite;
+
+import java.util.ArrayList;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 树枝构件
+ * @Date: Created in 17:28 2018/9/24
+ * @Modified By:
+ */
+public class Composite extends Component {
+
+    private ArrayList<Component> componentArrayList = new ArrayList<>();
+
+    public void add(Component component) {
+        this.componentArrayList.add(component);
+    }
+
+    public void remove(Component component) {
+        this.componentArrayList.remove(component);
+    }
+
+    public Component getChild(int i) {
+        return this.componentArrayList.get(i);
+    }
+
+    public ArrayList<Component> getChildren() {
+        return this.componentArrayList;
+    }
+}
+```
+叶子构件Leaf:
+
+```
+package com.yrs.composite;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 叶子构件
+ * @Date: Created in 17:33 2018/9/24
+ * @Modified By:
+ */
+public class Leaf extends Component {
+
+    @Override
+    public String toString() {
+        //可以覆写父类方法
+        return super.toString();
+    }
+}
+```
+场景类Client：
+
+```
+package com.yrs.composite;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 场景类
+ * @Date: Created in 17:34 2018/9/24
+ * @Modified By:
+ */
+public class Client {
+
+    public static void main(String[] args) {
+        //创建一个根节点
+        Composite root = new Composite();
+        root.doSomething();
+        //创建一个树枝构件
+        Composite branch = new Composite();
+        //创建一个叶子构件
+        Leaf leaf = new Leaf();
+        //建立整体
+        root.add(branch);
+        branch.add(leaf);
+        display(root);
+    }
+
+    //通过递归遍历树
+    public static void display(Composite root) {
+        for (Component item : root.getChildren()) {
+            if (item instanceof Leaf) {  //叶子节点
+                item.doSomething();
+            }else {  //树枝节点
+                display((Composite) item);
+            }
+        }
+    }
+}
+```
+
+源代码：https://github.com/ByrsH/Design-Patterns/tree/master/Design%20Patterns/src/main/java/com/yrs/composite
+
+安全模式实现方式能够使不同的组件正确的调用本身应有的方法，通过类型判断哪种类型构件从而调用相应方法。这样的实现方式很安全，不会出现叶子节点调用add方法新增构件。
+
+但是这样的实现也违反了依赖倒转原则。在场景类中递归遍历树的display方法的参数是具体实现类型Composite，而且遍历时要通过强制类型转换才能继续递归调用遍历。如何在遵从依赖倒转原则的前提下实现组合模式呢？请看下面的透明模式实现方式。
+
+#### 透明模式实现
+通用类图：
+![透明模式](https://img-blog.csdn.net/20181014175910239?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTA2NTcwOTQ=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70)
+
+抽象构件Component:
+
+```
+package com.yrs.composite.transparentModel;
+
+import java.util.ArrayList;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 透明模式下的抽象构建，把用来组合使用的方法放在抽象类中
+ * @Date: Created in 8:31 2018/9/25
+ * @Modified By:
+ */
+public abstract class Component {
+
+    //个体和整体都具有的方法
+    public void doSomething() {
+        //编写业务逻辑
+    }
+
+    //增加一个叶子构件或树枝构件
+    public abstract void add(Component component);
+
+    //删除一个叶子构件或树枝构件
+    public abstract void remove(Component component);
+
+    //获得一个叶子构件或树枝构件
+    public abstract Component getChild(int i);
+
+    //获得分支下的所有叶子构件和树枝构件
+    public abstract ArrayList<Component> getChildren();
+
+}
+```
+叶子构件Leaf:
+
+```
+package com.yrs.composite.transparentModel;
+
+import java.util.ArrayList;
+
+/**
+ * @Author: yangrusheng
+ * @Description:
+ * @Date: Created in 8:40 2018/9/25
+ * @Modified By:
+ */
+public class Leaf extends Component {
+
+    @Deprecated
+    @Override
+    public void add(Component component) throws UnsupportedOperationException {
+        //空实现，直接抛出“不支持请求”异常
+        throw new UnsupportedOperationException();
+    }
+
+    @Deprecated
+    @Override
+    public void remove(Component component) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Deprecated
+    @Override
+    public Component getChild(int i) throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Deprecated
+    @Override
+    public ArrayList<Component> getChildren() throws UnsupportedOperationException {
+        throw new UnsupportedOperationException();
+    }
+}
+```
+场景类Client：
+
+```
+package com.yrs.composite.transparentModel;
+
+/**
+ * @Author: yangrusheng
+ * @Description:
+ * @Date: Created in 8:47 2018/9/25
+ * @Modified By:
+ */
+public class Client {
+    //通过递归遍历树
+    public static void deploy(Component root) {
+        for (Component item : root.getChildren()) {
+            if (item instanceof Leaf) {
+                item.doSomething();
+            } else {
+                deploy(item);
+            }
+        }
+    }
+}
+```
+源代码：https://github.com/ByrsH/Design-Patterns/tree/master/Design%20Patterns/src/main/java/com/yrs/composite/transparentModel
+
+透明模式是把构件的操作都定义在抽象构件中，同时叶子节点要实现非叶子构件应有的方法，这些方法的实现都抛出UnsupportedOperationException异常。遍历树的方法deploy的参数就可以使用抽象构件了，这样就符合了依赖倒转原则，方便系统进行扩展。一个元素究竟是树枝节点还是叶子节点对客户来是透明的。
+
+### 优点
+
+ 1. 一棵树的所有节点都是Component，高层模块调用简单。
+ 2. 节点自由增加，非常容易扩展，符合开闭原则。
+
+### 缺点
+对应安全模式实现的方式来说，破坏了依赖倒转原则，直接使用了具体的类而不是接口。对于透明模式的实现方式来说虽然遵循了依赖倒转原则，但是叶子节点的调用会出现异常情况，设计上就不太安全。这是设计上的抉择：责任分开，安全操作，还是对客户透明，操作简单。
+
+### 使用场景
+
+ 1. 维护和展示部分-整体关系的场景，如树形菜单、文件和文件夹管理。
+ 2. 从一个整体中能够独立出部分模块或功能的场景。从一个整体中能够独立出部分模块或功能的场景。
+
+### 参考
+
+ - 《设计模式之禅–第二版》
+ - 《Herd First 设计模式》
+
+
+
+
+
