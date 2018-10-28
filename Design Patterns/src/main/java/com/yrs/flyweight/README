@@ -1,0 +1,179 @@
+享元模式：
+https://blog.csdn.net/u010657094/article/details/83243063
+
+### 享元模式定义
+
+> 享元模式（Flyweight Pattern）是池技术的重要实现方式，使用共享对象可有效地支持大量的细粒度的对象。
+
+### 通用类图
+![享元模式](https://img-blog.csdnimg.cn/20181028153532459.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTA2NTcwOTQ=,size_27,color_FFFFFF,t_70)
+
+### 具体实现
+
+当应用程序中存在大量的对象时，程序的性能会有所下降，而且可能会造成内存溢出。这时除了增加硬件资源或者借用NoSQL数据库存储等方式外，我们还可以使用享元模式来解决问题。
+
+同一类型的对象往往属性值各部相同，但某些属性的取值范围是确定的。比如说student类中属性grade（年级）和class（班级）它们的取值范围在一个特定的环境中是确定的，对于某个小学来说grade的取值是 1~ 5，class的取值是1~7 。我们可以把grade+class作为对象的一个标记，是一批对象的标识，比如一年级一班。对于像name、age和address等信息作为对象共享的部分，它可以在程序中动态添加和改变。这样的话就可以把程序中几千个对象缩减为5x7=35个对象（这里只是举个例子，实际程序中当然不会只有这么少的对象）。我们把动态改变的属性称为内部状态（name,age,address），不能共享的、用于作为唯一索引的属性称为外部状态（grade+class）。
+
+**Flyweight**类：抽象享元角色
+
+```
+package com.yrs.flyweight;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 抽象享元角色
+ * @Date: Created in 16:37 2018/10/20
+ * @Modified By:
+ */
+public abstract class Flyweight {
+    //内部状态
+    private String intrinsic;
+    //外部状态
+    private final String extrinsic;
+
+    //要求享元角色必须接受外部状态
+    public Flyweight(String extrinsic) {
+        this.extrinsic = extrinsic;
+    }
+    //定义业务操作
+    public abstract void operate();
+    public String getIntrinsic() {
+        return intrinsic;
+    }
+    public void setIntrinsic(String intrinsic) {
+        this.intrinsic = intrinsic;
+    }
+}
+```
+
+**ConcreteFlyweight**类：具体享元角色
+```
+package com.yrs.flyweight;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 具体享元角色
+ * @Date: Created in 16:42 2018/10/20
+ * @Modified By:
+ */
+public class ConcreteFlyweitht1 extends Flyweight {
+
+    public ConcreteFlyweitht1(String extrinsic) {
+        super(extrinsic);
+    }
+
+    @Override
+    public void operate() {
+        System.out.println(this.getClass().getName() + " " + this.getIntrinsic());
+    }
+}
+```
+
+```
+package com.yrs.flyweight;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 具体享元角色
+ * @Date: Created in 16:42 2018/10/20
+ * @Modified By:
+ */
+public class ConcreteFlyweitht2 extends Flyweight {
+
+    public ConcreteFlyweitht2(String extrinsic) {
+        super(extrinsic);
+    }
+
+    @Override
+    public void operate() {
+        System.out.println(this.getClass().getName() + " " + this.getIntrinsic());
+    }
+}
+```
+**FlyweightFactory**类：享元工厂，主要是构造一个池容器，同时提供从池中获取对象的方法。
+
+```
+package com.yrs.flyweight;
+
+import java.util.HashMap;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 享元工厂
+ * @Date: Created in 16:45 2018/10/20
+ * @Modified By:
+ */
+public class FlyweightFactory {
+
+    //定义一个池容器
+    private static HashMap<String, Flyweight> pool = new HashMap<String, Flyweight>();
+
+    //享元工厂
+    public static Flyweight getFlyweight(String extrinsic) {
+        //需要返回的对象
+        Flyweight flyweight = null;
+        //判断池中是否有该对象
+        if (pool.containsKey(extrinsic)) {
+            System.out.println("从池中获取");
+            flyweight = pool.get(extrinsic);
+        } else {
+            System.out.println("新建对象");
+            //根据外部状态创建享元对象
+            flyweight = new ConcreteFlyweitht1(extrinsic);
+            //放入池中
+            pool.put(extrinsic, flyweight);
+        }
+        return flyweight;
+    }
+
+}
+```
+**Client**类：客户类
+
+```
+package com.yrs.flyweight;
+
+/**
+ * @Author: yangrusheng
+ * @Description:
+ * @Date: Created in 16:59 2018/10/20
+ * @Modified By:
+ */
+public class Client {
+
+    public static void main(String[] args) {
+        Flyweight flyweight1 = FlyweightFactory.getFlyweight("yrs");
+        flyweight1.setIntrinsic("25");
+        flyweight1.operate();
+
+        Flyweight flyweight2 = FlyweightFactory.getFlyweight("yrs");
+        flyweight2.operate();
+        flyweight2.setIntrinsic("26");
+        flyweight2.operate();
+    }
+}
+```
+源代码：https://github.com/ByrsH/Design-Patterns/tree/master/Design%20Patterns/src/main/java/com/yrs/flyweight
+
+
+### 优缺点
+ 大大减少应用程序创建的对象，降低程序内存的占用，增强程序的性能，但它同时也提高了系统复杂性，需要分离出外部状态和内部状态，而且外部状态具有固化特性，不应该随内部状态改变而改变，否则导致系统的逻辑混乱。
+
+### 使用场景：
+
+ - 系统中存在大量的相似对象。
+ - 细粒度的对象都具备较接近的外部状态，而且内部状态与环境无关，也就是说对象没有特定身份。
+ - 需要缓冲池的场景。
+
+### 享元模式延伸
+#### 线程安全问题
+当我们把大量的对象缩减为较少的对象时，就会面临线程安全问题。因为可能多个线程会同时操作外部索引为 "一年级一班" 的对象，线程A把对象的age值改为7后要进行后续的操作时，线程B把该对象的age的值改为了8。这时就会造成系统数据错误等问题。如何避免呢？可能需要通过加锁或者使对象池中的对象尽可能多等机制来保证线程安全。
+
+#### 性能平衡
+可能会有人问可不可以把外部索引作为一个单独的类，然后在共享属性类里作为成员变量来作为索引标识。从技术实现上看当然可以，但是从程序性能上看会降低性能。这从何说起呢？在享元工厂类中存储对象池，客户类从对象池中依据外部索引获取对象，这时需要从HashMap中找出等于外部索引的对象。如果外部索引是一个对象，比较时就要用到equals和hashCode方法，执行效率就比较低。如果外部索引是Java基本类型的话，就可以很快的比较值是否相等。
+
+### 参考
+
+ - 《设计模式之禅-第2版》
+
+
