@@ -1,0 +1,138 @@
+模板方法模式相关文章：
+
+https://blog.csdn.net/u010657094/article/details/84035097
+
+### 定义
+
+> 定义一个操作中的算法的框架，而将一些步骤延迟到子类中。使得子类可以不改变一个算法的结构即可重定义该算法的某些特定步骤。
+
+### 通用类图
+![模板方法模式](https://img-blog.csdnimg.cn/20181113200152292.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTA2NTcwOTQ=,size_16,color_FFFFFF,t_70)
+### 具体实现
+
+模板方法模式只使用了Java的继承机制，因此理解起来是很简单的。首先是要定义一个抽象模板类，该类中有两种方法：基本方法和模板方法。基本方法是算法中的某一部分操作，由子类实现，在模板方法中被调用。模板方法就是算法的框架，通过调用基本方法来实现算法逻辑。ConcreteClass类是继承抽象模板类的具体实现类，实现类中通过重写基本方法可重定义算法的某些特定步骤。通常情况下可以通过在模板方法前加final关键字来防止子类重写模板方法，从而改变算法实现逻辑。
+
+抽象模板类：AbstractClass
+```
+package com.yrs.template;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 抽象模板类
+ * @Date: Created in 9:00 2018/11/13
+ * @Modified By:
+ */
+public abstract class AbstractClass {
+    //基本方法
+    protected abstract void doSomething();
+
+    //基本方法
+    protected abstract void doAnything();
+
+    //模板方法
+    public void templateMethod() {
+        /*
+         * 调用基本方法完成相关逻辑
+         */
+        this.doSomething();
+        this.doAnything();
+    }
+}
+```
+具体模板类：ConcreteClass1、ConcreteClass2
+```
+package com.yrs.template;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 具体模板类
+ * @Date: Created in 9:04 2018/11/13
+ * @Modified By:
+ */
+public class ConcreteClass1 extends AbstractClass {
+    //实现基本方法
+    @Override
+    protected void doSomething() {
+        //业务逻辑
+        System.out.println(this.getClass().getName() + " doSomething method");
+    }
+
+    @Override
+    protected void doAnything() {
+        //业务逻辑
+        System.out.println(this.getClass().getName() + " doAnything method");
+    }
+}
+
+```
+
+```
+package com.yrs.template;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 具体模板类
+ * @Date: Created in 9:04 2018/11/13
+ * @Modified By:
+ */
+public class ConcreteClass2 extends AbstractClass {
+    //实现基本方法
+    @Override
+    protected void doSomething() {
+        //业务逻辑
+        System.out.println(this.getClass().getName() + " doSomething method");
+    }
+
+    @Override
+    protected void doAnything() {
+        //业务逻辑
+        System.out.println(this.getClass().getName() + " doAnything method");
+    }
+}
+```
+场景类：Client
+
+```
+package com.yrs.template;
+
+/**
+ * @Author: yangrusheng
+ * @Description:
+ * @Date: Created in 9:07 2018/11/13
+ * @Modified By:
+ */
+public class Client {
+    public static void main(String[] args) {
+        AbstractClass class1 = new ConcreteClass1();
+        AbstractClass class2 = new ConcreteClass2();
+        //调用模板方法
+        class1.templateMethod();
+        class2.templateMethod();
+    }
+}
+
+```
+**源代码：https://github.com/ByrsH/Design-Patterns/tree/master/Design%20Patterns/src/main/java/com/yrs/template**
+
+### 优点
+
+ - 封装不变部分，扩展可变部分
+ - 提取公共部分代码，便于维护
+ - 行为由父类控制，子类实现
+
+### 缺点
+
+由于每部分的具体实现都是子类实现，也就造成子类执行的结果影响父类的结果，会增加代码阅读难度。
+
+### 使用场景：
+
+ - 多个子类有公有的方法，并且逻辑基本相同时。
+ - 重要、复杂的算法，可以把核心算法设计为模板方法，周边的相关细节功能则由各个子类实现。    
+ - 重构时，模板方法模式是一个经常使用的模式，把相同的代码抽取到父类中，然后通过钩子函数（添加一个返回boolean类型的方法，在模板方法中当做if语句条件）约束其行为。
+
+### 参考
+
+ - 《设计模式之禅-第2版》
+
+
+
