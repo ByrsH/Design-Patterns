@@ -1,0 +1,170 @@
+中介者模式：
+https://blog.csdn.net/u010657094/article/details/86564387
+
+### 定义
+> 用一个中介对象封装一系列的对象交互，中介者使各个对象不需要显示地相互作用，从而使其耦合松散，而且可以独立地改变它们之间的交互。
+
+### 目的
+> 使用中介者模式来集中相关对象之间复杂的沟通和控制方式。
+
+### 通用类图
+![中介者模式类图](https://img-blog.csdnimg.cn/20190310164121188.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTA2NTcwOTQ=,size_16,color_FFFFFF,t_70)
+### 具体实现
+中介者把原来各个对象之间相互调用，错综复杂的关系剥离开来。各个对象之间不需要依赖于其他对象，它们之间的调用逻辑封装至中介者类中，各个对象同时依赖于中介者类，把和其他类的交互委托给中介者。下面就让我们看看中介者类和各个对象的具体实现。
+
+抽象中介者角色 Mediator：
+```
+package com.yrs.mediator;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 抽象中介者
+ * @Date: Created in 17:55 2019/1/20
+ * @Modified By:
+ */
+public abstract class Mediator {
+    //定义同事类
+    protected ConcreteColleague1 c1;
+    protected ConcreteColleague2 c2;
+    //通过getter/setter方法把同事类注入进来
+    public ConcreteColleague1 getC1() {
+        return c1;
+    }
+    public void setC1(ConcreteColleague1 c1) {
+        this.c1 = c1;
+    }
+    public ConcreteColleague2 getC2() {
+        return c2;
+    }
+    public void setC2(ConcreteColleague2 c2) {
+        this.c2 = c2;
+    }
+    //中介者模式的业务逻辑
+    public abstract void doSomething1();
+    public abstract void doSomething2();
+}
+```
+具体中介者角色 ConcreteMediator：
+
+```
+package com.yrs.mediator;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 具体中介者
+ * @Date: Created in 18:06 2019/1/20
+ * @Modified By:
+ */
+public class ConcreteMediator extends Mediator {
+    @Override
+    public void doSomething1() {
+        //调用同事类的方法
+        super.c1.selfMethod1();
+        super.c2.selfMethod2();
+    }
+    @Override
+    public void doSomething2() {
+        super.c1.selfMethod1();
+        super.c2.selfMethod2();
+    }
+}
+```
+抽象同时类 Colleague：
+
+```
+package com.yrs.mediator;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 抽象同事类
+ * @Date: Created in 17:57 2019/1/20
+ * @Modified By:
+ */
+public abstract class Colleague {
+    protected Mediator mediator;
+    public Colleague(Mediator mediator) {
+        this.mediator = mediator;
+    }
+}
+```
+具体同事类 ConcreteColleague1、ConcreteColleague2：
+
+```
+package com.yrs.mediator;
+
+/**
+ * @Author: yangrusheng
+ * @Description:
+ * @Date: Created in 17:59 2019/1/20
+ * @Modified By:
+ */
+public class ConcreteColleague1 extends Colleague {
+    //通过构造函数传递中介者
+    public ConcreteColleague1(Mediator mediator) {
+        super(mediator);
+    }
+    //自有方法
+    public void selfMethod1() {
+        System.out.println("self method1");
+    }
+    //依赖其他同事方法
+    public void depMethod1() {
+        //处理自己的业务逻辑
+        //自己不能处理的业务逻辑，委托给中介者处理
+        super.mediator.doSomething1();
+    }
+}
+```
+
+```
+package com.yrs.mediator;
+
+/**
+ * @Author: yangrusheng
+ * @Description:
+ * @Date: Created in 17:59 2019/1/20
+ * @Modified By:
+ */
+public class ConcreteColleague2 extends Colleague {
+    //通过构造函数传递中介者
+    public ConcreteColleague2(Mediator mediator) {
+        super(mediator);
+    }
+    //自有方法
+    public void selfMethod2() {
+        System.out.println("self method2");
+    }
+    //依赖其他同事方法
+    public void depMethod2() {
+        //处理自己的业务逻辑
+        //自己不能处理的业务逻辑，委托给中介者处理
+        super.mediator.doSomething2();
+    }
+}
+```
+源代码：https://github.com/ByrsH/Design-Patterns/tree/master/Design%20Patterns/src/main/java/com/yrs/mediator
+
+### 优点
+ - 减少类间的依赖，降低了类间的耦合。
+ - 同过将控制逻辑集中，可以简化系统维护
+ - 可以让对象之间所传递的消息变的简单而且大幅减少。
+
+### 缺点
+  随着同事类的增多，中介者的逻辑会变的越来越复杂。
+
+### 使用场景
+  中介者模式适用于多个对象之间紧密耦合的情况，紧密耦合的标准是：在类图中出现了蜘蛛网状结构。
+
+### 实际应用
+ - 机场调度中心，用来调度每一个要降落和起飞的飞机。
+ - MVC框架中的C（Controller）就是一个中介者，它把M（Model，业务逻辑）和V（View，视图）隔离开，协调M和V协同工作，减少M和V的依赖关系。
+ - 媒体网关
+ - 中介服务。例如租房中介、出国中介等等。
+
+### 参考
+ - 《设计模式之禅-第2版》
+ - https://www.oodesign.com/mediator-pattern.html
+ - 《Head First 设计模式》
+
+
+
