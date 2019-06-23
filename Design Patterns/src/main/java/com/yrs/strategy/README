@@ -1,0 +1,296 @@
+## 定义
+定义一组算法，将每个算法都封装起来，并且使它们之间可以互换。
+
+## 通用类图
+![策略模式通用类图](https://img-blog.csdnimg.cn/20190623172107894.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTA2NTcwOTQ=,size_16,color_FFFFFF,t_70)
+## 具体实现
+策略模式就是当满足不同条件时，使用不同的策略执行。主要用到了面向对象的继承和多态机制。
+
+抽象的策略角色定义了每个策略或算法必须具有的方法和属性。
+
+```
+package com.yrs.strategy;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 抽象策略角色
+ * @Date: Created in 18:00 2019/6/22
+ * @Modified By:
+ */
+public interface Strategy {
+    void execute();
+}
+```
+
+具体的策略角色实现了抽象策略角色，该类含有具体的算法。
+```
+package com.yrs.strategy;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 具体的策略角色
+ * @Date: Created in 18:02 2019/6/22
+ * @Modified By:
+ */
+public class ConcreteStrategy1 implements Strategy {
+    @Override
+    public void execute() {
+        System.out.println("ConcreteStrategy1 execute!!!");
+    }
+}
+```
+
+```
+package com.yrs.strategy;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 具体的策略角色
+ * @Date: Created in 18:02 2019/6/22
+ * @Modified By:
+ */
+public class ConcreteStrategy2 implements Strategy {
+    @Override
+    public void execute() {
+        System.out.println("ConcreteStrategy2 execute!!!");
+    }
+}
+```
+
+Context为封装角色，也叫上下文角色，含有抽象策略成员变量，封装变化，屏蔽高层模块对策略、算法的直接访问。
+```
+package com.yrs.strategy;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 封装角色
+ * @Date: Created in 18:04 2019/6/22
+ * @Modified By:
+ */
+public class Context {
+
+    private Strategy strategy;
+
+    public Context(Strategy strategy) {
+        this.strategy = strategy;
+    }
+    //调用策略方法
+    public void execute() {
+        strategy.execute();
+    }
+}
+```
+下面看看客户端如何使用。
+```
+package com.yrs.strategy;
+
+/**
+ * @Author: yangrusheng
+ * @Description:
+ * @Date: Created in 18:07 2019/6/22
+ * @Modified By:
+ */
+public class Client {
+
+    public static void main(String[] args) {
+        //声明具体策略
+        Strategy strategy = new ConcreteStrategy1();
+        //声明上下文对象
+        Context context = new Context(strategy);
+        //执行策略方法
+        context.execute();
+    }
+}
+```
+
+## 策略模式的优点
+
+ - 算法可以自由切换
+ - 扩展性良好
+
+## 策略模式的缺点
+ - 策略类会随着策略的增多不断增多，可复用可能性小
+ - 所有策略类都需要对外暴露，客户端需要知道使用哪个策略类
+
+## 策略模式扩展
+### 策略模式 + 简单工厂
+通过上面的描述可以看出，客户端需要选择使用哪个策略，依赖了具体的策略类，违背了依赖倒置原则。我们可以结合简单工厂模式，把选择使用哪个策略类封装到Context类中。这样客户端就不需要依赖具体的策略类了。
+
+```
+package com.yrs.strategy;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 利用简单工厂模式创建策略角色
+ * @Date: Created in 18:11 2019/6/22
+ * @Modified By:
+ */
+public class ContextFactory {
+
+    private Strategy strategy;
+
+    //判断选择哪个策略放在了封装角色里面，客户端不做判断
+    public ContextFactory(Integer type) {
+        switch (type) {
+            case 1:
+                this.strategy = new ConcreteStrategy1();
+                break;
+            case 2:
+                this.strategy = new ConcreteStrategy2();
+                break;
+            default:
+                break;
+        }
+    }
+
+    //调用策略方法
+    public void execute() {
+        strategy.execute();
+    }
+}
+```
+客户端使用：
+
+```
+package com.yrs.strategy;
+
+/**
+ * @Author: yangrusheng
+ * @Description:
+ * @Date: Created in 18:07 2019/6/22
+ * @Modified By:
+ */
+public class Client {
+    public static void main(String[] args) {
+        // 简单工厂 + 策略模式。客户端不需要知道使用哪个策略类
+        ContextFactory contextFactory = new ContextFactory(2);
+        contextFactory.execute();
+    }
+}
+```
+
+同样，我们会发现把选择程序移到上下文类中后，每当增加新策略，switch语句就会新增一个选项，这其实违背了开闭原则。那么有没有什么方法，可以在增加策略类后不改变上下文类中的内容呢？这就是接下来我们要讲的内容。
+
+### 策略模式 + 注解 + 反射
+我们可以通过使用注解的方式标记策略类和条件的关系，然后使用反射技术实例化策略类，从而执行具体算法。
+
+注解StrategyInfo：
+
+```
+package com.yrs.strategy;
+
+import java.lang.annotation.*;
+
+/**
+ * @Author: yangrusheng
+ * @Description:
+ * @Date: Created in 18:40 2019/6/22
+ * @Modified By:
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface StrategyInfo {
+    int type() default 0;
+}
+```
+具体的策略类要加上StrategyInfo注解：
+
+```
+package com.yrs.strategy;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 具体的策略角色
+ * @Date: Created in 18:02 2019/6/22
+ * @Modified By:
+ */
+@StrategyInfo(type = 1)
+public class ConcreteStrategy1 implements Strategy {
+    @Override
+    public void execute() {
+        System.out.println("ConcreteStrategy1 execute!!!");
+    }
+}
+```
+
+封装角色AnnotationReflectContext :
+```
+package com.yrs.strategy;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.reflections.Reflections;
+
+/**
+ * @Author: yangrusheng
+ * @Description: 注解 + 反射 创建具体策略对象
+ * @Date: Created in 18:44 2019/6/22
+ * @Modified By:
+ */
+public class AnnotationReflectContext {
+
+    private final static Map<Integer, Class> allStrategyMap = new ConcurrentHashMap<>();
+
+    private final static String pkgName = "com.yrs.strategy";
+
+    private Strategy strategy;
+
+    static {
+        Reflections reflections = new Reflections(pkgName);
+        Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(StrategyInfo.class);
+        for (Class<?> classObj: annotatedClasses) {
+            StrategyInfo strategyInfo = classObj.getAnnotation(StrategyInfo.class);
+            allStrategyMap.put(strategyInfo.type(), classObj);
+        }
+    }
+
+    public AnnotationReflectContext(Integer type) {
+        if (allStrategyMap.containsKey(type)) {
+            try {
+                this.strategy = (Strategy) allStrategyMap.get(type).newInstance();
+            } catch (InstantiationException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    //调用策略方法
+    public void execute() {
+        strategy.execute();
+    }
+}
+```
+
+客户端调用：
+```
+package com.yrs.strategy;
+
+/**
+ * @Author: yangrusheng
+ * @Description:
+ * @Date: Created in 18:07 2019/6/22
+ * @Modified By:
+ */
+public class Client {
+
+    public static void main(String[] args) {
+        // 注解 + 反射
+        AnnotationReflectContext annotationReflectContext = new AnnotationReflectContext(1);
+        annotationReflectContext.execute();
+    }
+}
+```
+用上述的方式就可以实现新增策略类，而不用改变Context内容了。符合了开闭原则。
+
+**源代码：** https://github.com/ByrsH/Design-Patterns/tree/master/Design%20Patterns/src/main/java/com/yrs/strategy
+
+## 参考
+ - 《设计模式之禅-第2版》
+ - http://www.jasongj.com/design_pattern/simple_factory/
+
+
